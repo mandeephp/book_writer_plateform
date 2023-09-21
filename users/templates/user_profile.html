@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>{{ user.email }}'s Profile</h2>
+
+<h3>Your Books</h3>
+<h3>Start a New Book</h3>
+<form method="post">
+    {% csrf_token %}
+    <label for="book_title">Book Title:</label>
+    <input type="text" id="book_title" name="book_title" required value="{{ form_data.book_title }}">
+
+    <input type="submit" value="Create Book">
+</form>
+    {% if error_message %}
+    <div class="error">
+        {{ error_message }}
+    </div>
+{% endif %}
+{% if authored_books or collaborated_books %}
+    <h4>Books Authored:</h4>
+    {% if authored_books %}
+        <ul>
+        {% for book in authored_books %}
+            <li><a href="{% url 'view_book' book.id %}">{{ book.title }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't authored any books.</p>
+    {% endif %}
+
+
+    <h4>Books Collaborated On:</h4>
+    {% if collaborated_books %}
+        <ul>
+        {% for book in collaborated_books %}
+            <li><a href="{% url 'view_book' book.id %}">{{ book.title }}</a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't collaborated on any books.</p>
+    {% endif %}
+{% else %}
+    <p>You haven't authored or collaborated on any books.</p>
+{% endif %}
+{% endblock %}

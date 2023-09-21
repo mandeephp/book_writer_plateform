@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Book <a href="{% url 'view_book' section.book.id %}">{{ section.book.title }}</a></h1>
+<h2>Edit Section: "{{ section.title }}"</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label for="section_title">Section Title:</label>
+    <input type="text" id="section_title" name="section_title" value="{{ section.title }}" required>
+
+    <label for="section_content">Content:</label>
+    <textarea id="section_content" name="section_content" rows="10" cols="50">{{ section.content }}</textarea>
+
+    <input type="submit" value="Update Section">
+</form>
+
+<!-- Display Parent Section -->
+{% if section.parent_section %}
+    <h3>Parent Section:</h3>
+    {% if user_role.is_author %}
+    <p><a href="{% url 'view_section' section.parent_section.id %}">{{ section.parent_section.title }}</a></p>
+        {% endif %}
+{% endif %}
+
+<!-- Display Subsections -->
+<h3>Subsections:</h3>
+{% if section.subsections.all %}
+    <div>
+    {% for subsection in section.subsections.all %}
+        <div>
+            <h4>{{ subsection.title }}<a href="{% url 'view_section' subsection.id %}">[Edit]</a></h4>
+            <p>{{ subsection.content }}</p>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No subsections.</p>
+{% endif %}
+{% if user_role.is_author %}
+<h3>Add Subsection to "{{ section.title }}"</h3>
+<form method="post">
+    {% csrf_token %}
+
+    <label for="subsection_title">Subsection Title:</label>
+    <input type="text" id="subsection_title" name="subsection_title" required>
+
+    <input type="hidden" name="parent_section_id" value="{{ section.id }}">
+    <input type="submit" name="add_subsection" value="Add Subsection">
+</form>
+{% endif %}
+{% endblock %}

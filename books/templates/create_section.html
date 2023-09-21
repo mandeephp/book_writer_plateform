@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h2>Add a Section to "{{ book.title }}"</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label for="new_section_title">Section Title:</label>
+    <input type="text" id="new_section_title" name="new_section_title" required>
+
+    <label for="parent_section">Parent Section (Optional):</label>
+    <select name="parent_section" id="parent_section">
+        <option value="">None</option>
+        {% for section in book.sections.all %}
+            <option value="{{ section.id }}">{{ section.title }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit" value="Add Section">
+</form>
+{% endblock %}

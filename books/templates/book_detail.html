@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ book.title }}</h2>
+<p>Author: {{ book.author.email }}</p>
+
+    <h3>Sections</h3>{% if user_role.is_author %}<p><a href="{% url 'create_section' book.id %}">Add New Section</a></p>{% endif %}
+{% if book.main_sections %}
+    <div>
+    {% for section in book.main_sections %}
+        <div>
+            <h3>{{ section.title }}<a href="{% url 'view_section' section.id %}">[Edit]</a></h3>
+            <p>{{ section.content }}</p>
+        </div>
+    {% endfor %}
+
+    </div>
+{% else %}
+    <p>No sections added yet.</p>
+{% endif %}
+{% if user_role.is_author %}
+    <h2>Manage Collaborators for "{{ book.title }}"</h2>
+
+<form method="post">
+  {% csrf_token %}
+
+  <label for="collaborator">Add Collaborator:</label>
+  <select name="collaborator" id="collaborator">
+    {% for user in users %}
+      <option value="{{ user.id }}">{{ user.email }}</option>
+    {% endfor %}
+  </select>
+
+  <input type="submit" name="add_collaborator" value="Add Collaborator">
+</form>
+
+<h3>Current Collaborators:</h3>
+<ul>
+  {% for collaborator in book.collaborators.all %}
+    <li>
+      {{ collaborator.email }}
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="remove_collaborator_id" value="{{ collaborator.id }}">
+        <input type="submit" name="remove_collaborator" value="Remove">
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
